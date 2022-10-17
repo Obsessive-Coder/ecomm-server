@@ -1,5 +1,8 @@
 const express = require('express');
+const router = require('express').Router();
 const cors = require('cors');
+const db = require('./app/models');
+const productController = require('./app/controllers/product.controller');
 
 const app = express();
 
@@ -11,11 +14,16 @@ app.use(cors(corsConfig));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Sync the database.
+db.sequelize.sync()
+  .then(() => console.log('Synced database.'))
+  .catch(error => console.log(`Failed to sync database: ${error.message}`));
+
 // TODO: Put routes in own directory.
 // Connect to routes.
-app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to the e-comm server and api' });
-});
+router.get('/', productController.findAll);
+
+app.use('/api/products', router);
 
 // TODO: Store port in .env file.
 const PORT = process.env.PORT || 8080;
