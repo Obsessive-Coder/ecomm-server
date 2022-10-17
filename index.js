@@ -1,8 +1,7 @@
 const express = require('express');
-const router = require('express').Router();
 const cors = require('cors');
 const db = require('./app/models');
-const productController = require('./app/controllers/product.controller');
+const routes = require('./app/routes');
 
 const app = express();
 
@@ -19,11 +18,8 @@ db.sequelize.sync()
   .then(() => console.log('Synced database.'))
   .catch(error => console.log(`Failed to sync database: ${error.message}`));
 
-// TODO: Put routes in own directory.
 // Connect to routes.
-router.get('/', productController.findAll);
-
-app.use('/api/products', router);
+app.use(routes);
 
 // TODO: Store port in .env file.
 const PORT = process.env.PORT || 8080;
