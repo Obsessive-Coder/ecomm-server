@@ -38,15 +38,15 @@ class ProductController {
 
   // Find a single product in the database using its id.
   findOne(req, res) {
-    const { id } = req.params;
+    const { productId } = req.params;
 
-    Product.findByPk(id)
+    Product.findByPk(productId)
       .then(product => {
         if (product) {
           res.send(product);
         } else {
           res.status(404).send({
-            message: `Cannot find the product with id: ${id}`
+            message: `Cannot find the product with id: ${productId}`
           })
         }
       })
