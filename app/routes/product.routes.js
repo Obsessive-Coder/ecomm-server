@@ -1,10 +1,12 @@
 const router = require('express').Router();
-const productController = require('../controllers/product.controller');
+const ProductController = require('../controllers/product.controller');
+
 
 router.route('/')
-  .get(productController.findAll);
+  .get(ProductController.findAll);
 
 router.route('/:productId')
-  .get(productController.findOne);
+  .get(ProductController.findOne)
+  .put(ProductController.update);
 
 module.exports = router;
