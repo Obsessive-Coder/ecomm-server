@@ -12,7 +12,7 @@ function handleError(error) {
 class ProductController {
   // Create a new product in the database.
   static create(req, res) {
-    const { title, description, price } = req.body;
+    const { title, description, price, active = false } = req.body;
 
     // Validate request    
     if (!title || !description || !price) {
@@ -23,7 +23,7 @@ class ProductController {
     }
 
     // Create and save the new product.
-    const product = { title, description, price };
+    const product = { title, description, price, active };
 
     Product.create(product)
       .then(product => res.send(product))
