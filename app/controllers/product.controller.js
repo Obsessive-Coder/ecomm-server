@@ -1,5 +1,5 @@
 const db = require('../models');
-const Product = db.Product;
+const { Product } = db;
 const Op = db.Sequelize.Op;
 
 function handleError(error) {
