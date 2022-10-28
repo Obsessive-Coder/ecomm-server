@@ -6,4 +6,4 @@ class ProductController extends GenericController {
   }
 };
 
-module.exports = ProductController;
+module.exports = new ProductController();

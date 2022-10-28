@@ -1,8 +1,8 @@
-const router = require('express').Router();
+const express = require('express');
 
 class GenericRouter {
   constructor(controller) {
-    this.router = router;
+    this.router = express.Router();
 
     const { findAll, create, findOne, update, destroy } = controller;
 

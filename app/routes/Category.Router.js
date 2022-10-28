@@ -1,12 +1,10 @@
 const GenericRouter = require('./Generic.Router');
-const CategoryController = require('../controllers/Category.Controller');
+const categoryController = require('../controllers/Category.Controller');
 
 class CategoryRouter extends GenericRouter {
   constructor() {
-    const controller = new CategoryController();
-    super(controller);
-    this.controller = controller;
+    super(categoryController);
   }
 }
 
-module.exports = CategoryRouter;
+module.exports = new CategoryRouter().router;

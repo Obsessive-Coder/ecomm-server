@@ -18,14 +18,12 @@ class GenericController {
   // Route Handlers.
   create(req, res) {
     // Create a new record in the database.
-    console.log('HERE: ', req.body)
     this.TableModel.create(req.body)
       .then(record => res.send(record))
       .catch(error => res.status(500).send(this.handleError(error)));
   }
 
   findAll(req, res) {
-    console.log('HERE: ', this.TableModel)
     this.TableModel.findAll()
       .then(records => res.send(records))
       .catch(error => res.status(500).send(this.handleError(error)));
