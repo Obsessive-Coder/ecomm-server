@@ -11,12 +11,14 @@ class GenericController {
     this.findOne = this.findOne.bind(this);
     this.update = this.update.bind(this);
     this.destroy = this.destroy.bind(this);
+    this.destroyAll = this.destroyAll.bind(this);
     this.handleError = this.handleError.bind(this);
   }
 
   // Route Handlers.
   create(req, res) {
     // Create a new record in the database.
+    console.log('HERE: ', req.body)
     this.TableModel.create(req.body)
       .then(record => res.send(record))
       .catch(error => res.status(500).send(this.handleError(error)));
@@ -69,6 +71,14 @@ class GenericController {
         } else {
           res.send(this.handleError({ message: `Could not delete the record in ${this.modelName}.` }));
         }
+      })
+      .catch(error => res.status(500).send(this.handleError(error)));
+  }
+
+  destroyAll(req, res) {
+    this.TableModel.destroy({ where: {}, truncate: false })
+      .then(destroyedCount => {
+        res.send({ message: `${destroyedCount} records were deleted in ${this.modelName}` })
       })
       .catch(error => res.status(500).send(this.handleError(error)));
   }
