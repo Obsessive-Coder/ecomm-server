@@ -1,3 +1,5 @@
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 const db = require('../models');
 
 class GenericController {
@@ -24,7 +26,21 @@ class GenericController {
   }
 
   findAll(req, res) {
-    this.TableModel.findAll()
+    const {
+      order: { column = 'title', direction = 'ASC' } = {},
+      category_id,
+      title
+    } = req.query;
+
+    console.log(title)
+
+    this.TableModel.findAll({
+      where: {
+        ...(category_id ? { category_id } : {}),
+        ...(title ? { title: { [Op.like]: `%${title}%` } } : {})
+      },
+      order: [[column, direction]]
+    })
       .then(records => res.send(records))
       .catch(error => res.status(500).send(this.handleError(error)));
   }
