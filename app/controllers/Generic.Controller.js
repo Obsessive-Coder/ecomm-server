@@ -29,14 +29,14 @@ class GenericController {
     const {
       order: { column = 'title', direction = 'ASC' } = {},
       category_id,
+      id: categoryId,
       title
     } = req.query;
-
-    console.log(title)
 
     this.TableModel.findAll({
       where: {
         ...(category_id ? { category_id } : {}),
+        ...(categoryId ? { id: categoryId } : {}),
         ...(title ? { title: { [Op.like]: `%${title}%` } } : {})
       },
       order: [[column, direction]]
