@@ -12,7 +12,7 @@ module.exports = {
     const getRandomCategoryId = () => {
       const index = Math.floor(Math.random() * categoryIds.length);
       return categoryIds[index];
-    }
+    };
 
     const products = Array.from(Array(1000).keys()).map(value => ({
       id: uuidv4(),

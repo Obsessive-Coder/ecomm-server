@@ -2,13 +2,13 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-  class Category extends Model {
+  class CategoryType extends Model {
     static associate(models) {
       // define association here
     }
   }
 
-  Category.init({
+  CategoryType.init({
     id: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
@@ -18,10 +18,6 @@ module.exports = (sequelize, DataTypes) => {
     active: {
       type: DataTypes.BOOLEAN,
       defaultValue: true
-    },
-    type_id: {
-      type: DataTypes.UUID,
-      allowNull: false
     },
     createdAt: {
       allowNull: false,
@@ -35,8 +31,9 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     sequelize,
-    modelName: 'Category',
+    modelName: 'CategoryType',
+    tableName: 'category_types'
   });
 
-  return Category;
+  return CategoryType;
 };
