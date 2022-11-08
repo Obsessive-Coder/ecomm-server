@@ -27,7 +27,7 @@ class GenericController {
 
   findAll(req, res) {
     const {
-      order: { column = 'title', direction = 'ASC' } = {},
+      order: { column = 'id', direction = 'ASC' } = {},
       category_id,
       id: categoryId,
       title
