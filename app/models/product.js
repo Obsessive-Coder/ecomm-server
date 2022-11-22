@@ -37,7 +37,10 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 0,
       allowNull: false
     },
-    // discount_id: DataTypes.UUIDV4,
+    image_url: {
+      type: DataTypes.STRING(2083),
+      allowNull: false
+    },
     createdAt: {
       allowNull: false,
       type: DataTypes.DATE,
