@@ -6,7 +6,7 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     const data = Array.from(Array(10).keys()).map(value => ({
       id: uuidv4(),
-      title: `Test Type ${value}`,
+      title: `Test Type ${value}`
     }));
 
     await queryInterface.bulkInsert('category_types', data, {});
