@@ -10,7 +10,11 @@ class OrderController extends GenericController {
     this.TableModel.findAll({
       include: [{
         model: db.OrderItem,
-        attributes: ['quantity', 'item_price']
+        attributes: ['quantity', 'item_price'],
+        include: [{
+          model: db.Product,
+          attributes: ['title']
+        }]
       }, {
         model: db.OrderStatus,
         attributes: ['title', 'description']
@@ -18,7 +22,9 @@ class OrderController extends GenericController {
     })
       .then(records => {
         const data = records.map(record => {
-          const { id, updatedAt, address, phone, payment, status_id, OrderItems, OrderStatus } = record;
+          const {
+            id, updatedAt, address, phone, payment, status_id, OrderItems, OrderStatus,
+          } = record;
 
           return {
             id,
@@ -28,7 +34,11 @@ class OrderController extends GenericController {
             payment,
             status_id,
             total: OrderItems.reduce((prev, { item_price }) => prev + item_price, 0),
-            status: OrderStatus.title
+            status: OrderStatus.title,
+            items: OrderItems.map((item) => ({
+              ...item.dataValues,
+              title: item.Product.title
+            })),
           };
         });
 
