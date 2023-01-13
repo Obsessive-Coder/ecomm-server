@@ -10,7 +10,7 @@ class OrderController extends GenericController {
     this.TableModel.findAll({
       include: [{
         model: db.OrderItem,
-        attributes: ['quantity', 'item_price'],
+        attributes: ['id', 'quantity', 'item_price'],
         include: [{
           model: db.Product,
           attributes: ['title']
@@ -56,7 +56,7 @@ class OrderController extends GenericController {
         model: db.OrderItem,
         include: [{
           model: db.Product,
-          attributes: ['title']
+          attributes: ['id', 'title']
         }]
       }, {
         model: db.OrderStatus,
