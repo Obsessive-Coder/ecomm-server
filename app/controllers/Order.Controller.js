@@ -13,7 +13,7 @@ class OrderController extends GenericController {
         attributes: ['id', 'quantity', 'item_price'],
         include: [{
           model: db.Product,
-          attributes: ['title']
+          attributes: ['id', 'title']
         }]
       }, {
         model: db.OrderStatus,
