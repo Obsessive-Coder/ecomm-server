@@ -77,7 +77,7 @@ class OrderController extends GenericController {
             ...item.dataValues,
             title: item.Product.title
           })),
-          total: OrderItems.reduce((prev, { item_price }) => prev + item_price, 0),
+          total: OrderItems.reduce((prev, { item_price, quantity }) => prev + item_price * quantity, 0),
           status: OrderStatus.title
         });
       })
