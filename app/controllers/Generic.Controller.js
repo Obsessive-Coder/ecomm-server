@@ -63,9 +63,6 @@ class GenericController {
 
   update(req, res) {
     const { id } = req.params;
-
-    console.log('HERE: ', req.body);
-
     this.TableModel.update(req.body, { where: { id } })
       .then(updatedCount => {
         if (updatedCount == 1) {
