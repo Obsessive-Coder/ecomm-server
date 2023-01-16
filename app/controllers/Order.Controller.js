@@ -83,6 +83,28 @@ class OrderController extends GenericController {
       })
       .catch(error => res.status(500).send(this.handleError(error)));
   }
+
+  destroy(req, res) {
+    const { id } = req.params;
+
+    this.TableModel.findByPk(
+      id, {
+      include: [{
+        model: db.OrderItem,
+        attributes: ['product_id', 'quantity']
+      }]
+    })
+      .then(({ OrderItems }) => {
+        const promises = OrderItems.map(({ product_id, quantity: itemQuantity }) => {
+          db.Product.findByPk(product_id, { attributes: ['quantity'] })
+            .then(({ quantity: productQuantity }) => productQuantity + itemQuantity)
+            .then(quantity => db.Product.update({ quantity }, { where: { id: product_id } }));
+        });
+
+        Promise.all(promises)
+          .then(() => super.destroy(req, res));
+      })
+  }
 }
 
 module.exports = new OrderController();
