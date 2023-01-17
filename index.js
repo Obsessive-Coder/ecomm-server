@@ -7,10 +7,10 @@ const routes = require('./app/routes');
 const app = express();
 
 // TODO: store origin in .env file.
-// var corsConfig = { origin: 'http://localhost:8081' };
+var corsConfig = { origin: 'http://localhost:8081' };
 
 // Setup middleware.
-// app.use(cors(corsConfig));
+app.use(cors(corsConfig));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
