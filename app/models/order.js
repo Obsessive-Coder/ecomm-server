@@ -16,6 +16,10 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true
     },
+    recipient_name: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
     address: DataTypes.STRING,
     phone: DataTypes.STRING,
     payment: DataTypes.STRING,

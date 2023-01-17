@@ -23,12 +23,14 @@ class OrderController extends GenericController {
       .then(records => {
         const data = records.map(record => {
           const {
-            id, updatedAt, address, phone, payment, status_id, OrderItems, OrderStatus,
+            id, recipient_name, updatedAt, address, phone, payment, status_id,
+            OrderItems, OrderStatus,
           } = record;
 
           return {
             id,
             date: updatedAt,
+            recipient_name,
             address,
             phone,
             payment,
@@ -64,11 +66,14 @@ class OrderController extends GenericController {
       }]
     })
       .then(record => {
-        const { id, updatedAt, address, phone, payment, status_id, OrderItems, OrderStatus } = record;
+        const {
+          id, updatedAt, recipient_name, address, phone, payment, status_id, OrderItems, OrderStatus
+        } = record;
 
         res.send({
           id,
           date: updatedAt,
+          recipient_name,
           address,
           phone,
           payment,
