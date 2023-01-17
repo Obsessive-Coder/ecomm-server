@@ -40,6 +40,20 @@ module.exports = {
       'decimalNumbers': true
     }
   },
+  'development': {
+    'port': AWS_RDS_PORT,
+    'username': AWS_RDS_USERNAME,
+    'password': AWS_RDS_PASSWORD,
+    'database': AWS_RDS_NAME,
+    'host': AWS_RDS_HOST_NAME,
+    'dialect': 'mysql',
+    'define': {
+      'timestamps': false
+    },
+    'dialectOptions': {
+      'decimalNumbers': true
+    }
+  },
   'test': {
     'username': 'root',
     'password': null,
