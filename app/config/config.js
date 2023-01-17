@@ -4,11 +4,11 @@ const {
   LOCAL_DB_NAME,
   LOCAL_DB_USERNAME,
   LOCAL_DB_PASSWORD,
-  AWS_RDS_PORT,
-  AWS_RDS_HOST_NAME,
-  AWS_RDS_NAME,
-  AWS_RDS_USERNAME,
-  AWS_RDS_PASSWORD,
+  RDS_PORT,
+  RDS_HOSTNAME,
+  RDS_DB_NAME,
+  RDS_USERNAME,
+  RDS_PASSWORD,
 } = process.env;
 
 module.exports = {
@@ -27,11 +27,11 @@ module.exports = {
     }
   },
   'local-remote': {
-    'port': AWS_RDS_PORT,
-    'username': AWS_RDS_USERNAME,
-    'password': AWS_RDS_PASSWORD,
-    'database': AWS_RDS_NAME,
-    'host': AWS_RDS_HOST_NAME,
+    'port': RDS_PORT,
+    'username': RDS_USERNAME,
+    'password': RDS_PASSWORD,
+    'database': RDS_DB_NAME,
+    'host': RDS_HOSTNAME,
     'dialect': 'mysql',
     'define': {
       'timestamps': false
@@ -41,11 +41,11 @@ module.exports = {
     }
   },
   'development': {
-    'port': AWS_RDS_PORT,
-    'username': AWS_RDS_USERNAME,
-    'password': AWS_RDS_PASSWORD,
-    'database': AWS_RDS_NAME,
-    'host': AWS_RDS_HOST_NAME,
+    'port': RDS_PORT,
+    'username': RDS_USERNAME,
+    'password': RDS_PASSWORD,
+    'database': RDS_DB_NAME,
+    'host': RDS_HOSTNAME,
     'dialect': 'mysql',
     'define': {
       'timestamps': false
