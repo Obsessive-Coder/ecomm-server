@@ -9,7 +9,7 @@ const app = express();
 const { NODE_ENV, LOCAL_ORIGIN, LIVE_ORIGIN } = process.env
 
 var corsConfig = {
-  origin: (NODE_ENV === 'local' || NODE_ENV === 'local-remote') ? LOCAL_ORIGIN : LIVE_ORIGIN
+  origin: NODE_ENV.includes('local') ? LOCAL_ORIGIN : LIVE_ORIGIN
 };
 
 // Setup middleware.
