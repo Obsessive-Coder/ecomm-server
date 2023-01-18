@@ -1,9 +1,9 @@
 const {
-  LOCAL_DB_PORT,
-  LOCAL_DB_HOST_NAME,
+  LOCAL_PORT,
+  LOCAL_HOSTNAME,
   LOCAL_DB_NAME,
-  LOCAL_DB_USERNAME,
-  LOCAL_DB_PASSWORD,
+  LOCAL_USERNAME,
+  LOCAL_PASSWORD,
   RDS_PORT,
   RDS_HOSTNAME,
   RDS_DB_NAME,
@@ -12,12 +12,26 @@ const {
 } = process.env;
 
 module.exports = {
+  // 'local': {
+  //   'port': 3306,
+  //   'username': 'root',
+  //   'password': 'root',
+  //   'database': 'ecomm_dev_db',
+  //   'host': '127.0.0.1',
+  //   'dialect': 'mysql',
+  //   'define': {
+  //     'timestamps': false
+  //   },
+  //   'dialectOptions': {
+  //     'decimalNumbers': true
+  //   }
+  // },
   'local': {
-    'port': LOCAL_DB_PORT,
-    'username': LOCAL_DB_USERNAME,
-    'password': LOCAL_DB_PASSWORD,
+    'port': LOCAL_PORT,
+    'username': LOCAL_USERNAME,
+    'password': LOCAL_PASSWORD,
     'database': LOCAL_DB_NAME,
-    'host': LOCAL_DB_HOST_NAME,
+    'host': LOCAL_HOSTNAME,
     'dialect': 'mysql',
     'define': {
       'timestamps': false

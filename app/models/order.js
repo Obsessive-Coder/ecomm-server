@@ -23,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
     address: DataTypes.STRING,
     phone: DataTypes.STRING,
     payment: DataTypes.STRING,
+    shipping: DataTypes.NUMERIC(12, 2),
     status_id: {
       type: DataTypes.UUID,
       allowNull: false
