@@ -23,7 +23,11 @@ module.exports = (sequelize, DataTypes) => {
     address: DataTypes.STRING,
     phone: DataTypes.STRING,
     payment: DataTypes.STRING,
-    shipping: DataTypes.NUMERIC(12, 2),
+    shipping: {
+      type: DataTypes.NUMERIC(12, 2),
+      allowNull: false,
+      defaultValue: 0.00,
+    },
     status_id: {
       type: DataTypes.UUID,
       allowNull: false

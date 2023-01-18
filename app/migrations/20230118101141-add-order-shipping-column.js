@@ -9,7 +9,7 @@ module.exports = {
       {
         type: Sequelize.NUMERIC(12, 2),
         allowNull: false,
-        defaultValue: 0
+        defaultValue: 0.00
       }
     );
   },

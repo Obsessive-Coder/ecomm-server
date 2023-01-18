@@ -36,7 +36,7 @@ class OrderController extends GenericController {
         const data = records.map(record => {
           const {
             id, recipient_name, updatedAt, address, phone, payment, status_id,
-            OrderItems, OrderStatus,
+            shipping, OrderItems, OrderStatus,
           } = record;
 
           return {
@@ -47,7 +47,8 @@ class OrderController extends GenericController {
             phone,
             payment,
             status_id,
-            total: OrderItems.reduce((prev, { item_price, quantity }) => prev + (item_price * quantity), 0),
+            shipping,
+            total: OrderItems.reduce((prev, { item_price, quantity }) => prev + (item_price * quantity), 0) + shipping,
             status: OrderStatus.title,
             items: OrderItems.map((item) => ({
               ...item.dataValues,
@@ -87,7 +88,8 @@ class OrderController extends GenericController {
     })
       .then(record => {
         const {
-          id, updatedAt, recipient_name, address, phone, payment, status_id, OrderItems, OrderStatus
+          id, updatedAt, recipient_name, shipping, address, phone, payment, status_id,
+          OrderItems, OrderStatus
         } = record;
 
         res.send({
@@ -102,7 +104,8 @@ class OrderController extends GenericController {
             ...item.dataValues,
             title: item.Product.title
           })),
-          total: OrderItems.reduce((prev, { item_price, quantity }) => prev + (item_price * quantity), 0),
+          shipping,
+          total: OrderItems.reduce((prev, { item_price, quantity }) => prev + (item_price * quantity), 0) + shipping,
           status: OrderStatus.title
         });
       })
