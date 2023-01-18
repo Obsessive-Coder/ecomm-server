@@ -1,3 +1,5 @@
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 const db = require('../models');
 const GenericController = require('./Generic.Controller');
 
@@ -7,7 +9,17 @@ class OrderController extends GenericController {
   }
 
   findAll(req, res) {
+    const {
+      order: { column = 'id', direction = 'ASC' } = {},
+      recipient_name
+    } = req.query;
+
     this.TableModel.findAll({
+      where: {
+        ...(recipient_name ? {
+          recipient_name: { [Op.like]: `%${recipient_name}%` }
+        } : {})
+      },
       include: [{
         model: db.OrderItem,
         attributes: ['id', 'quantity', 'item_price'],
@@ -35,7 +47,7 @@ class OrderController extends GenericController {
             phone,
             payment,
             status_id,
-            total: OrderItems.reduce((prev, { item_price }) => prev + item_price, 0),
+            total: OrderItems.reduce((prev, { item_price, quantity }) => prev + (item_price * quantity), 0),
             status: OrderStatus.title,
             items: OrderItems.map((item) => ({
               ...item.dataValues,
@@ -43,6 +55,14 @@ class OrderController extends GenericController {
             })),
           };
         });
+
+        if (column === 'price') {
+          if (direction === 'DESC') {
+            data?.sort((a, b) => (a.total > b.total ? -1 : 1))
+          } else {
+            data?.sort((a, b) => (a.total > b.total ? 1 : -1))
+          }
+        }
 
         res.send(data)
       })
@@ -82,7 +102,7 @@ class OrderController extends GenericController {
             ...item.dataValues,
             title: item.Product.title
           })),
-          total: OrderItems.reduce((prev, { item_price, quantity }) => prev + item_price * quantity, 0),
+          total: OrderItems.reduce((prev, { item_price, quantity }) => prev + (item_price * quantity), 0),
           status: OrderStatus.title
         });
       })
