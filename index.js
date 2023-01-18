@@ -6,9 +6,11 @@ const routes = require('./app/routes');
 
 const app = express();
 
-// TODO: store origin in .env file.
-// var corsConfig = { origin: 'http://localhost:3000' };
-var corsConfig = { origin: 'http://ecomm-site-dev.s3-website-us-east-1.amazonaws.com' };
+const { NODE_ENV, LOCAL_ORIGIN, LIVE_ORIGIN } = process.env
+
+var corsConfig = {
+  origin: (NODE_ENV === 'local' || NODE_ENV === 'local-remote') ? LOCAL_ORIGIN : LIVE_ORIGIN
+};
 
 // Setup middleware.
 app.use(cors(corsConfig));
