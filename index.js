@@ -22,12 +22,6 @@ db.sequelize.sync()
   .then(() => console.log('Synced database.'))
   .catch(error => console.log(`Failed to sync database: ${error.message}`));
 
-
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  next();
-});
-
 // Connect to routes.
 app.use(routes);
 
