@@ -19,7 +19,6 @@ class GenericController {
 
   // Route Handlers.
   create(req, res) {
-    // Create a new record in the database.
     this.TableModel.create(req.body)
       .then(record => res.send(record))
       .catch(error => res.status(500).send(this.handleError(error)));
@@ -63,7 +62,6 @@ class GenericController {
 
   update(req, res) {
     const { id } = req.params;
-    console.log('HERE: ', req.body)
     this.TableModel.update(req.body, { where: { id } })
       .then(updatedCount => {
         if (updatedCount == 1) {

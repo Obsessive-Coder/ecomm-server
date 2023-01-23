@@ -8,6 +8,13 @@ class OrderController extends GenericController {
     super('Order');
   }
 
+  getOrderTotal(orderItems = [], shipping = 0) {
+    const itemsCost = orderItems.reduce((prev, { item_price, quantity }) => (
+      prev + (item_price * quantity)
+    ), 0);
+    return (itemsCost + shipping).toFixed(2);
+  }
+
   findAll(req, res) {
     const {
       order: { column = 'id', direction = 'ASC' } = {},
@@ -22,11 +29,7 @@ class OrderController extends GenericController {
       },
       include: [{
         model: db.OrderItem,
-        attributes: ['id', 'quantity', 'item_price'],
-        include: [{
-          model: db.Product,
-          attributes: ['id', 'title', 'quantity']
-        }]
+        attributes: ['id', 'quantity', 'item_price', 'product_id'],
       }, {
         model: db.OrderStatus,
         attributes: ['title', 'description']
@@ -35,37 +38,29 @@ class OrderController extends GenericController {
       .then(records => {
         const data = records.map(record => {
           const {
-            id, recipient_name, updatedAt, address, phone, payment, status_id,
-            shipping, OrderItems, OrderStatus,
+            id, recipient_name, address, phone, payment, status_id,
+            shipping, OrderItems, OrderStatus: { title: status }, updatedAt: date
           } = record;
 
           return {
             id,
-            date: updatedAt,
             recipient_name,
-            address,
-            phone,
+            address, phone,
             payment,
             status_id,
+            date,
+            status,
             shipping,
-            total: OrderItems.reduce((prev, { item_price, quantity }) => prev + (item_price * quantity), 0) + shipping,
-            status: OrderStatus.title,
-            items: OrderItems.map((item) => ({
-              ...item.dataValues,
-              title: item.Product.title
-            })),
+            total: this.getOrderTotal(OrderItems, shipping),
+            items: OrderItems,
           };
         });
 
         if (column === 'price') {
-          if (direction === 'DESC') {
-            data?.sort((a, b) => (a.total > b.total ? -1 : 1))
-          } else {
-            data?.sort((a, b) => (a.total > b.total ? 1 : -1))
-          }
+          data?.sort((a, b) => direction === 'DESC' ? b.total - a.total : a.total - b.total);
         }
 
-        res.send(data)
+        res.send(data);
       })
       .catch(error => res.status(500).send(this.handleError(error)));
   }
@@ -76,11 +71,7 @@ class OrderController extends GenericController {
     this.TableModel.findOne({
       where: { id },
       include: [{
-        model: db.OrderItem,
-        include: [{
-          model: db.Product,
-          attributes: ['id', 'title', 'quantity']
-        }]
+        model: db.OrderItem
       }, {
         model: db.OrderStatus,
         attributes: ['title', 'description']
@@ -88,25 +79,21 @@ class OrderController extends GenericController {
     })
       .then(record => {
         const {
-          id, updatedAt, recipient_name, shipping, address, phone, payment, status_id,
-          OrderItems, OrderStatus
+          id, recipient_name, address, phone, payment, status_id,
+          shipping, OrderItems, OrderStatus: { title: status }, updatedAt: date
         } = record;
 
         res.send({
           id,
-          date: updatedAt,
           recipient_name,
-          address,
-          phone,
+          address, phone,
           payment,
           status_id,
-          orderItems: OrderItems.map((item) => ({
-            ...item.dataValues,
-            title: item.Product.title
-          })),
+          date,
+          status,
           shipping,
-          total: OrderItems.reduce((prev, { item_price, quantity }) => prev + (item_price * quantity), 0) + shipping,
-          status: OrderStatus.title
+          total: this.getOrderTotal(OrderItems, shipping),
+          items: OrderItems
         });
       })
       .catch(error => res.status(500).send(this.handleError(error)));

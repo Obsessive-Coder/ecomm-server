@@ -32,7 +32,15 @@ class OrderItemController extends GenericController {
         db.Product.findByPk(product_id, { attributes: ['quantity'] })
           .then(({ quantity: productQuantity }) => productQuantity - quantityDifference)
           .then(quantity => db.Product.update({ quantity }, { where: { id: product_id } }))
-          .then(() => super.update(req, res));
+          .then(() => db.OrderItem.update(req.body, { where: { id } }))
+          .then(updatedCount => {
+            if (updatedCount == 1) {
+              res.send({ message: `Successfully updated the record in ${this.modelName}.` });
+            } else {
+              res.send(this.handleError({ message: `Could not update the record in ${this.modelName}.` }))
+            }
+          })
+          .catch(error => res.status(500).send(this.handleError(error)));
       })
   }
 
