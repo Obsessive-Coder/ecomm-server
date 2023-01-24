@@ -28,6 +28,7 @@ class GenericController {
     const {
       order: { column = 'id', direction = 'ASC' } = {},
       category_id,
+      type_id,
       id: categoryId,
       title
     } = req.query;
@@ -35,10 +36,11 @@ class GenericController {
     this.TableModel.findAll({
       where: {
         ...(category_id ? { category_id } : {}),
+        ...(type_id ? { type_id } : {}),
         ...(categoryId ? { id: categoryId } : {}),
-        ...(title ? { title: { [Op.like]: `%${title}%` } } : {})
+        ...(title ? { title: { [Op.like]: `%${title}%` } } : {}),
       },
-      order: [[column, direction]]
+      order: [[column, direction]],
     })
       .then(records => res.send(records))
       .catch(error => res.status(500).send(this.handleError(error)));
