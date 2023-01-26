@@ -18,11 +18,13 @@ class OrderController extends GenericController {
   findAll(req, res) {
     const {
       order: { column = 'id', direction = 'ASC' } = {},
-      recipient_name
+      recipient_name,
+      status_id
     } = req.query;
 
     this.TableModel.findAll({
       where: {
+        ...(status_id ? { status_id } : {}),
         ...(recipient_name ? {
           recipient_name: { [Op.like]: `%${recipient_name}%` }
         } : {})
@@ -33,7 +35,8 @@ class OrderController extends GenericController {
       }, {
         model: db.OrderStatus,
         attributes: ['title', 'description']
-      }]
+      }],
+      order: [[column, direction]],
     })
       .then(records => {
         const data = records.map(record => {
@@ -71,7 +74,8 @@ class OrderController extends GenericController {
     this.TableModel.findOne({
       where: { id },
       include: [{
-        model: db.OrderItem
+        model: db.OrderItem,
+        attributes: ['id', 'quantity', 'item_price', 'product_id'],
       }, {
         model: db.OrderStatus,
         attributes: ['title', 'description']
