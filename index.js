@@ -6,8 +6,11 @@ const routes = require('./app/routes');
 
 const app = express();
 
-// TODO: store origin in .env file.
-var corsConfig = { origin: 'http://localhost:8081' };
+const { NODE_ENV, LOCAL_ORIGIN, LIVE_ORIGIN } = process.env
+
+var corsConfig = {
+  origin: NODE_ENV.includes('local') ? LOCAL_ORIGIN : LIVE_ORIGIN
+};
 
 // Setup middleware.
 app.use(cors(corsConfig));

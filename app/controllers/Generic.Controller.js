@@ -19,7 +19,6 @@ class GenericController {
 
   // Route Handlers.
   create(req, res) {
-    // Create a new record in the database.
     this.TableModel.create(req.body)
       .then(record => res.send(record))
       .catch(error => res.status(500).send(this.handleError(error)));
@@ -29,6 +28,7 @@ class GenericController {
     const {
       order: { column = 'id', direction = 'ASC' } = {},
       category_id,
+      type_id,
       id: categoryId,
       title
     } = req.query;
@@ -36,10 +36,11 @@ class GenericController {
     this.TableModel.findAll({
       where: {
         ...(category_id ? { category_id } : {}),
+        ...(type_id ? { type_id } : {}),
         ...(categoryId ? { id: categoryId } : {}),
-        ...(title ? { title: { [Op.like]: `%${title}%` } } : {})
+        ...(title ? { title: { [Op.like]: `%${title}%` } } : {}),
       },
-      order: [[column, direction]]
+      order: [[column, direction]],
     })
       .then(records => res.send(records))
       .catch(error => res.status(500).send(this.handleError(error)));
@@ -63,7 +64,6 @@ class GenericController {
 
   update(req, res) {
     const { id } = req.params;
-
     this.TableModel.update(req.body, { where: { id } })
       .then(updatedCount => {
         if (updatedCount == 1) {

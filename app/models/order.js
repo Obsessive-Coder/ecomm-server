@@ -16,9 +16,18 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true
     },
+    recipient_name: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
     address: DataTypes.STRING,
     phone: DataTypes.STRING,
     payment: DataTypes.STRING,
+    shipping: {
+      type: DataTypes.NUMERIC(12, 2),
+      allowNull: false,
+      defaultValue: 0.00,
+    },
     status_id: {
       type: DataTypes.UUID,
       allowNull: false
@@ -36,6 +45,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Order',
+    tableName: 'orders'
   });
   return Order;
 };

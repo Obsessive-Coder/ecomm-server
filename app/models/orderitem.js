@@ -22,11 +22,13 @@ module.exports = (sequelize, DataTypes) => {
     },
     order_id: {
       type: DataTypes.UUID,
-      allowNull: false
+      allowNull: false,
+      onDelete: 'CASCADE'
     },
     product_id: {
       type: DataTypes.UUID,
-      allowNull: false
+      allowNull: false,
+      onDelete: 'CASCADE'
     },
     quantity: {
       type: DataTypes.INTEGER,
