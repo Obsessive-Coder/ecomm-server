@@ -22,6 +22,7 @@ module.exports = {
     const data = Array.from(Array(1000).keys())
       .map(() => ({
         id: uuidv4(),
+        recipient_name: 'John Doe',
         address: '123 Abc Avenue',
         phone: '(012) 345-6789',
         payment: ['COD', 'Card'][Math.floor(Math.random() * 2)],
