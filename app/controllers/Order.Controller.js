@@ -39,25 +39,26 @@ class OrderController extends GenericController {
       order: [[column, direction]],
     })
       .then(records => {
-        const data = records.map(record => {
-          const {
-            id, recipient_name, address, phone, payment, status_id,
-            shipping, OrderItems, OrderStatus: { title: status }, updatedAt: date
-          } = record;
+        const data = records
+          .map(record => {
+            const {
+              id, recipient_name, address, phone, payment, status_id,
+              shipping, OrderItems, OrderStatus: { title: status }, updatedAt: date
+            } = record;
 
-          return {
-            id,
-            recipient_name,
-            address, phone,
-            payment,
-            status_id,
-            date,
-            status,
-            shipping,
-            total: this.getOrderTotal(OrderItems, shipping),
-            items: OrderItems,
-          };
-        });
+            return {
+              id,
+              recipient_name,
+              address, phone,
+              payment,
+              status_id,
+              date,
+              status,
+              shipping,
+              total: this.getOrderTotal(OrderItems, shipping),
+              items: OrderItems,
+            };
+          });
 
         if (column === 'price') {
           data?.sort((a, b) => direction === 'DESC' ? b.total - a.total : a.total - b.total);
