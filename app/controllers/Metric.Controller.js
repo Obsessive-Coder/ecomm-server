@@ -114,9 +114,6 @@ class MetricController extends GenericController {
                 };
               });
 
-            console.log('HERE Records: ', records);
-            console.log('HERE Orders: ', orders);
-
             res.send({
               orders,
               totals
