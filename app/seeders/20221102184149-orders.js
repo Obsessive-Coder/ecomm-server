@@ -28,15 +28,26 @@ module.exports = {
       return products[index];
     };
 
-    const data = Array.from(Array(1000).keys())
-      .map(() => ({
-        id: uuidv4(),
-        recipient_name: 'John Doe',
-        address: '123 Abc Avenue',
-        phone: '(012) 345-6789',
-        payment: ['COD', 'Card'][Math.floor(Math.random() * 2)],
-        status_id: getRandomStatusId(),
-      }));
+    const getRandomDate = (startDate, endDate) => {
+      // Taken from https://stackoverflow.com/a/9035732/11878783.
+      return new Date(startDate.getTime() + Math.random() * (endDate.getTime() - startDate.getTime()));
+    };
+
+    const data = Array.from(Array(30).keys())
+      .map(() => {
+        const orderDate = getRandomDate(new Date(2020, 0, 1), new Date());
+
+        return ({
+          id: uuidv4(),
+          recipient_name: 'John Doe',
+          address: '123 Abc Avenue',
+          phone: '(012) 345-6789',
+          payment: ['COD', 'Card'][Math.floor(Math.random() * 2)],
+          status_id: getRandomStatusId(),
+          createdAt: orderDate,
+          updatedAt: orderDate
+        })
+      });
 
     await queryInterface.bulkInsert('orders', data, {});
 
