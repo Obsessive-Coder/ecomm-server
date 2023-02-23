@@ -33,7 +33,7 @@ module.exports = {
       return new Date(startDate.getTime() + Math.random() * (endDate.getTime() - startDate.getTime()));
     };
 
-    const data = Array.from(Array(30).keys())
+    const data = Array.from(Array(1000).keys())
       .map(() => {
         const orderDate = getRandomDate(new Date(2020, 0, 1), new Date());
 
