@@ -26,6 +26,20 @@ module.exports = {
   //     'decimalNumbers': true
   //   }
   // },
+  // 'local-remote': {
+  //   'port': 3306,
+  //   'username': 'admin',
+  //   'password': 'adOnise-ataMan-abA-sKeg',
+  //   'database': 'ecomm_dev_db',
+  //   'host': 'ecomm-dev-db.cpgjcnafbcpk.us-east-1.rds.amazonaws.com',
+  //   'dialect': 'mysql',
+  //   'define': {
+  //     'timestamps': false
+  //   },
+  //   'dialectOptions': {
+  //     'decimalNumbers': true
+  //   }
+  // },
   'local': {
     'port': LOCAL_PORT,
     'username': LOCAL_USERNAME,

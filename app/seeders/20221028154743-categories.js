@@ -1,13 +1,16 @@
 'use strict';
 const { v4: uuidv4 } = require('uuid');
-const db = require('../models');
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    const categoryTypes = await db.CategoryType.findAll({ where: { active: true } });
+    const categoryTypes = await queryInterface.sequelize
+      .query(
+        'SELECT id from category_types WHERE active = true;',
+        { type: Sequelize.QueryTypes.SELECT }
+      );
 
-    const typeIds = categoryTypes.map(({ id }) => id);
+    const typeIds = categoryTypes.map(({ id, ...rest }) => id);
 
     const getRandomTypeId = () => {
       const index = Math.floor(Math.random() * typeIds.length);
