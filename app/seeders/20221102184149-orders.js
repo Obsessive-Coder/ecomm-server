@@ -28,7 +28,7 @@ module.exports = {
       return products[index];
     };
 
-    const data = Array.from(Array(30).keys())
+    const data = Array.from(Array(1000).keys())
       .map(() => ({
         id: uuidv4(),
         recipient_name: 'John Doe',
