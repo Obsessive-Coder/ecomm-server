@@ -3,10 +3,10 @@ branch-defaults:
     environment: ecomm-server-dev-env
     group_suffix: null
 global:
-  application_name: ecomm-server-dev
+  application_name: ecomm-server
   branch: null
   default_ec2_keyname: aws-eb
-  default_platform: Node.js 16 running on 64bit Amazon Linux 2
+  default_platform: Node.js 16
   default_region: us-east-1
   include_git_submodules: true
   instance_profile: null
