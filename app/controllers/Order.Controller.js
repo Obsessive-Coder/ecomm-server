@@ -15,14 +15,28 @@ class OrderController extends GenericController {
     return (itemsCost + shipping).toFixed(2);
   }
 
+  getPagingData(data, page, limit) {
+    const { count: itemCount, rows } = data;
+    const pageIndex = page ? +page : 0;
+    const pageCount = Math.ceil(itemCount / limit);
+
+    return { itemCount, pageCount, pageIndex, rows };
+  };
+
   findAll(req, res) {
     const {
       order: { column = 'id', direction = 'ASC' } = {},
       recipient_name,
-      status_id
+      status_id,
+      page = '0',
+      limit = '25'
     } = req.query;
 
-    this.TableModel.findAll({
+    const pageInt = parseInt(page);
+    const limitInt = parseInt(limit);
+    const offset = pageInt * limitInt;
+
+    this.TableModel.findAndCountAll({
       where: {
         ...(status_id ? { status_id } : {}),
         ...(recipient_name ? {
@@ -37,9 +51,14 @@ class OrderController extends GenericController {
         attributes: ['title', 'description']
       }],
       order: [[column, direction]],
+      distinct: true,
+      limit: limitInt,
+      offset
     })
       .then(records => {
-        const data = records
+        const data = this.getPagingData(records, pageInt, limitInt);
+
+        const rows = data.rows
           .map(record => {
             const {
               id, recipient_name, address, phone, payment, status_id,
@@ -61,10 +80,10 @@ class OrderController extends GenericController {
           });
 
         if (column === 'price') {
-          data?.sort((a, b) => direction === 'DESC' ? b.total - a.total : a.total - b.total);
+          rows?.sort((a, b) => direction === 'DESC' ? b.total - a.total : a.total - b.total);
         }
 
-        res.send(data);
+        res.send({ ...data, rows });
       })
       .catch(error => res.status(500).send(this.handleError(error)));
   }

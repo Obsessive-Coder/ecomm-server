@@ -34,7 +34,7 @@ class MetricController extends GenericController {
         where: {
           title: ['Delivered', 'Processing']
         }
-      }],
+      }]
     })
       .then(records => {
         const allTime = records
@@ -87,7 +87,7 @@ class MetricController extends GenericController {
             where: {
               title: ['Delivered', 'Pending', 'Processing']
             }
-          }],
+          }]
         })
           .then(records => {
             const orders = records
