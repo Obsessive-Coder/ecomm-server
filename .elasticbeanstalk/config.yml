@@ -1,5 +1,5 @@
 branch-defaults:
-  server-dev:
+  _dev:
     environment: ecomm-server-dev-env
     group_suffix: null
 global:
