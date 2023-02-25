@@ -17,6 +17,14 @@ class GenericController {
     this.handleError = this.handleError.bind(this);
   }
 
+  getPagingData(data, page, limit) {
+    const { count: itemCount, rows } = data;
+    const pageIndex = page ? +page : 0;
+    const pageCount = Math.ceil(limit ? itemCount / limit : itemCount);
+
+    return { itemCount, pageCount, pageIndex, rows };
+  };
+
   // Route Handlers.
   create(req, res) {
     this.TableModel.create(req.body)
@@ -30,10 +38,16 @@ class GenericController {
       category_id,
       type_id,
       id: categoryId,
-      title
+      title,
+      page,
+      limit
     } = req.query;
 
-    this.TableModel.findAll({
+    const pageInt = parseInt(page);
+    const limitInt = parseInt(limit);
+    const offset = pageInt * limitInt;
+
+    this.TableModel.findAndCountAll({
       where: {
         ...(category_id ? { category_id } : {}),
         ...(type_id ? { type_id } : {}),
@@ -41,8 +55,14 @@ class GenericController {
         ...(title ? { title: { [Op.like]: `%${title}%` } } : {}),
       },
       order: [[column, direction]],
+      distinct: true,
+      ...(limit ? { limit: limitInt } : {}),
+      ...(offset ? { offset } : {})
     })
-      .then(records => res.send(records))
+      .then(records => {
+        const data = this.getPagingData(records, pageInt, limitInt);
+        res.send(data)
+      })
       .catch(error => res.status(500).send(this.handleError(error)));
   }
 

@@ -1,11 +1,14 @@
 'use strict';
 const { v4: uuidv4 } = require('uuid');
-const db = require('../models');
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    const categories = await db.Category.findAll({ where: { active: true } });
+    const categories = await queryInterface.sequelize
+      .query(
+        'SELECT id from categories WHERE active = true;',
+        { type: Sequelize.QueryTypes.SELECT }
+      );
 
     const categoryIds = categories.map(({ id }) => id);
 
@@ -24,10 +27,10 @@ module.exports = {
       image_url: 'https://via.placeholder.com/350x150'
     }));
 
-    await queryInterface.bulkInsert('Products', products, {});
+    await queryInterface.bulkInsert('products', products, {});
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.bulkDelete('Products', null, {});
+    await queryInterface.bulkDelete('products', null, {});
   }
 };
