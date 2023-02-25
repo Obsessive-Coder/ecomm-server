@@ -6,6 +6,9 @@ class MetricController extends GenericController {
     super('');
 
     // Bind class methods.
+    this.getOrderTotal = this.getOrderTotal.bind(this);
+    this.reduceOrder = this.reduceOrder.bind(this);
+    this.sortByDate = this.sortByDate.bind(this);
     this.findAll = this.findAll.bind(this);
   }
 
@@ -16,6 +19,14 @@ class MetricController extends GenericController {
     return (itemsCost + shipping);
   }
 
+  reduceOrder(prev, { OrderItems, shipping }) {
+    return prev + this.getOrderTotal(OrderItems, shipping);
+  }
+
+  sortByDate({ date: dateA }, { date: dateB }) {
+    return dateB - dateA;
+  }
+
   // Route Handlers.
   findAll(req, res) {
     // Today total = total of all processing and delivered orders with today's date.
@@ -24,7 +35,8 @@ class MetricController extends GenericController {
 
     // All-time total = total of all processing and delivered orders.
 
-    db.Order.findAll({
+    db.Order.findAndCountAll({
+      distinct: true,
       include: [{
         model: db.OrderItem,
         attributes: ['id', 'quantity', 'item_price', 'product_id'],
@@ -32,93 +44,100 @@ class MetricController extends GenericController {
         model: db.OrderStatus,
         attributes: ['title', 'description'],
         where: {
-          title: ['Delivered', 'Processing']
+          title: ['Delivered', 'Pending', 'Processing']
         }
       }]
     })
       .then(records => {
-        const allTime = records
-          .reduce((prev, { OrderItems, shipping }) => (
-            prev + this.getOrderTotal(OrderItems, shipping)
-          ), 0)
-          .toFixed(2);
+        const { count, rows } = records;
+        const totalsOrders = rows.filter(({ OrderStatus: { title } }) => title !== 'Pending');
 
         const today = new Date();
         const day = today.getUTCDay();
         const month = today.getUTCMonth();
         const year = today.getUTCFullYear();
 
-        const todayTotal = records
+        const allTimeTotal = totalsOrders
+          .reduce(this.reduceOrder, 0)
+          .toFixed(2);
+
+        const todayTotal = totalsOrders
           .filter(({ updatedAt }) => {
             const date = new Date(updatedAt);
             return date.getUTCFullYear() === year
               && date.getUTCMonth() === month
               && date.getUTCDay() === day;
           })
-          .reduce((prev, { OrderItems, shipping }) => (
-            prev + this.getOrderTotal(OrderItems, shipping)
-          ), 0)
+          .reduce(this.reduceOrder, 0)
           .toFixed(2);
 
-        const monthTotal = records
+        const monthTotal = totalsOrders
           .filter(({ updatedAt }) => {
             const date = new Date(updatedAt);
             return date.getUTCFullYear() === year && date.getUTCMonth() === month;
           })
-          .reduce((prev, { OrderItems, shipping }) => (
-            prev + this.getOrderTotal(OrderItems, shipping)
-          ), 0)
+          .reduce(this.reduceOrder, 0)
           .toFixed(2);
 
-        return {
+
+        const orders = rows.map(record => {
+          const {
+            id, recipient_name, address, phone, payment, status_id,
+            shipping, OrderItems, OrderStatus: { title: status }, updatedAt: date
+          } = record;
+
+          return {
+            id,
+            recipient_name,
+            address, phone,
+            payment,
+            status_id,
+            date,
+            status,
+            shipping,
+            total: this.getOrderTotal(OrderItems, shipping).toFixed(2),
+            items: OrderItems,
+          };
+        });
+
+        const pending = orders
+          .filter(({ status }) => status === 'Pending')
+          .sort(this.sortByDate);
+
+        const processing = orders
+          .filter(({ status }) => status === 'Processing')
+          .sort(this.sortByDate);
+
+        const delivered = orders
+          .filter(({ status }) => status === 'Delivered')
+          .sort(this.sortByDate);
+
+        const ordersData = {
+          orders: {
+            count,
+            orders: orders.sort(this.sortByDate).slice(0, 5)
+          },
+          pending: {
+            count: pending.length,
+            orders: pending.slice(0, 5),
+          },
+          processing: {
+            count: processing.length,
+            orders: processing.slice(0, 5),
+          },
+          delivered: {
+            count: delivered.length,
+            orders: delivered.slice(0, 5),
+          }
+        };
+
+        const totals = {
           today: todayTotal,
           month: monthTotal,
-          total: allTime
-        }
-      })
-      .then(totals => {
-        db.Order.findAll({
-          include: [{
-            model: db.OrderItem,
-            attributes: ['id', 'quantity', 'item_price', 'product_id'],
-          }, {
-            model: db.OrderStatus,
-            attributes: ['title', 'description'],
-            where: {
-              title: ['Delivered', 'Pending', 'Processing']
-            }
-          }]
-        })
-          .then(records => {
-            const orders = records
-              .filter(({ OrderStatus: { title } }) => (
-                ['Pending', 'Processing', 'Delivered'].includes(title)
-              ))
-              .map(record => {
-                const {
-                  id, recipient_name, address, phone, payment, status_id,
-                  shipping, OrderItems, OrderStatus: { title: status }, updatedAt: date
-                } = record;
+          total: allTimeTotal
+        };
 
-                return {
-                  id,
-                  recipient_name,
-                  address, phone,
-                  payment,
-                  status_id,
-                  date,
-                  status,
-                  shipping,
-                  total: this.getOrderTotal(OrderItems, shipping).toFixed(2),
-                  items: OrderItems,
-                };
-              });
-
-            res.send({
-              orders,
-              totals
-            });
-          });
+        res.send({ ordersData, totals });
       })
       .catch(error => res.status(500).send(this.handleError(error)));
   }
