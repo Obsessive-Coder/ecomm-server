@@ -14,7 +14,7 @@ class MetricController extends GenericController {
 
   // Route Handlers.
   findAll(req, res) {
-    const { salesPeriod = 'week' } = req.query;
+    const { year = new Date().getUTCFullYear() } = req.query;
 
     db.Order.findAndCountAll({
       distinct: true,
@@ -34,7 +34,7 @@ class MetricController extends GenericController {
         const formattedOrders = formatOrders(rows);
         const totals = getTotals(rows.filter(({ OrderStatus: { title } }) => title !== 'Pending'));
         const counts = getCounts(formattedOrders, count);
-        const sales = getSales(formattedOrders, salesPeriod);
+        const sales = getSales(formattedOrders, year);
         res.send({ counts, sales, totals });
       })
       .catch(error => res.status(500).send(this.handleError(error)));

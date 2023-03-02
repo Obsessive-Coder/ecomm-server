@@ -1,5 +1,3 @@
-const { differenceInHours, isThisMonth, isThisYear } = require('date-fns');
-
 module.exports = class MetricsHelper {
   static formatOrders(orders = []) {
     const { getOrderTotal } = MetricsHelper;
@@ -39,52 +37,34 @@ module.exports = class MetricsHelper {
       .sort(MetricsHelper.sortByDate);
   }
 
-  static isWithinSalesPeriod(date, salesPeriod = 'week') {
-    let isWithinPeriod = false;
-    switch (salesPeriod) {
-      case 'week':
-        isWithinPeriod = (Math
-          .floor(differenceInHours(new Date(), new Date(date)) / (7 * 24)) | 0) === 0;
-        break;
-
-      case 'month':
-        isWithinPeriod = isThisMonth(new Date(date));
-        break;
-
-      case 'year':
-        isWithinPeriod = isThisYear(new Date(date))
-        break;
-
-      default:
-        break;
-    }
-
-    return isWithinPeriod;
-  }
-
-  static getSalesGraphData(orders = [], salesPeriod = 'week') {
-    const { isWithinSalesPeriod, getOrderTotal, getTimestamp } = MetricsHelper;
+  static getSalesGraphData(orders = [], year) {
+    const { getOrderTotal } = MetricsHelper;
 
     return orders.reduce((prev, { date, items, shipping }) => {
-      const timestamp = getTimestamp(date);
-      const restPrev = prev.filter(({ x }) => x !== timestamp);
-      const next = [...restPrev];
-
-      if (isWithinSalesPeriod(date, salesPeriod)) {
+      if (date.getUTCFullYear() === new Date(year).getUTCFullYear()) {
+        const month = date.getUTCMonth();
         const orderTotal = getOrderTotal(items, shipping);
 
-        let data = prev.filter(({ x }) => x === timestamp)[0];
-
-        if (data) {
-          data.y += orderTotal;
+        if (prev[month] === undefined || prev[month] === null) {
+          prev[month] = orderTotal;
         } else {
-          data = { x: timestamp, y: orderTotal }
+          prev[month] += orderTotal;
         }
-
-        next.push(data);
       }
 
-      return next;
+      return prev;
+    }, []);
+  }
+
+  static getYears(orders = []) {
+    return orders.reduce((prev, { date }) => {
+      const year = date.getUTCFullYear();
+
+      if (!prev.includes(year)) {
+        prev.push(year);
+      }
+
+      return prev;
     }, []);
   }
 
@@ -94,13 +74,6 @@ module.exports = class MetricsHelper {
 
   static sortByDate({ date: dateA }, { date: dateB }) {
     return dateB - dateA;
-  }
-
-  static getTimestamp(date) {
-    const month = date.getUTCMonth() + 1;
-    const monthDay = date.getUTCDate();
-    const year = date.getUTCFullYear();
-    return new Date(`${month} ${monthDay} ${year}`).getTime();
   }
 
   static getTotals(orders = []) {
@@ -166,25 +139,31 @@ module.exports = class MetricsHelper {
     };
   }
 
-  static getSales(orders = [], salesPeriod = 'week') {
-    const { getOrdersByType, getSalesGraphData } = MetricsHelper;
+  static getSales(orders = [], year) {
+    const { getOrdersByType, getSalesGraphData, getYears } = MetricsHelper;
 
     const pendingOrders = getOrdersByType(orders, 'Pending');
-    const pending = getSalesGraphData(pendingOrders, salesPeriod);
-
     const processingOrders = getOrdersByType(orders, 'Processing');
-    const processing = getSalesGraphData(processingOrders, salesPeriod);
-
     const deliveredOrders = getOrdersByType(orders, 'Delivered');
-    const delivered = getSalesGraphData(deliveredOrders, salesPeriod);
 
-    const all = getSalesGraphData(orders, salesPeriod);
-
-    return {
-      all,
-      pending,
-      processing,
-      delivered
+    const data = {
+      years: getYears(orders).sort((a, b) => b - a),
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+      datasets: [{
+        label: 'pending',
+        data: getSalesGraphData(pendingOrders, year),
+        backgroundColor: 'rgb(238, 95, 91)'
+      }, {
+        label: 'processing',
+        data: getSalesGraphData(processingOrders, year),
+        backgroundColor: 'rgb(91, 192, 222)'
+      }, {
+        label: 'delivered',
+        data: getSalesGraphData(deliveredOrders, year),
+        backgroundColor: 'rgb(248, 148, 6)'
+      }]
     };
+
+    return data;
   }
 }
