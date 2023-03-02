@@ -2,7 +2,7 @@ const db = require('../models');
 const GenericController = require('./Generic.Controller');
 const MetricsHelper = require('../utils/helpers/metrics');
 
-const { formatOrders, getCounts, getSales, getTotals } = MetricsHelper;
+const { formatOrders, getCounts, getOrders, getSales, getTotals, getYears } = MetricsHelper;
 
 class MetricController extends GenericController {
   constructor() {
@@ -34,8 +34,16 @@ class MetricController extends GenericController {
         const formattedOrders = formatOrders(rows);
         const totals = getTotals(rows.filter(({ OrderStatus: { title } }) => title !== 'Pending'));
         const counts = getCounts(formattedOrders, count);
-        const sales = getSales(formattedOrders, year);
-        res.send({ counts, sales, totals });
+
+        const chartsData = {
+          years: getYears(formattedOrders).sort((a, b) => b - a),
+          tabData: {
+            sales: getSales(formattedOrders, year),
+            orders: getOrders(formattedOrders, year)
+          }
+        };
+
+        res.send({ chartsData, counts, totals });
       })
       .catch(error => res.status(500).send(this.handleError(error)));
   }

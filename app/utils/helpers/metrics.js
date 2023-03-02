@@ -56,6 +56,22 @@ module.exports = class MetricsHelper {
     }, []);
   }
 
+  static getOrdersGraphData(orders = [], year) {
+    return orders.reduce((prev, { date }) => {
+      if (date.getUTCFullYear() === new Date(year).getUTCFullYear()) {
+        const month = date.getUTCMonth();
+
+        if (prev[month] === undefined || prev[month] === null) {
+          prev[month] = 1;
+        } else {
+          prev[month] += 1;
+        }
+      }
+
+      return prev;
+    }, []);
+  }
+
   static getYears(orders = []) {
     return orders.reduce((prev, { date }) => {
       const year = date.getUTCFullYear();
@@ -140,14 +156,13 @@ module.exports = class MetricsHelper {
   }
 
   static getSales(orders = [], year) {
-    const { getOrdersByType, getSalesGraphData, getYears } = MetricsHelper;
+    const { getOrdersByType, getSalesGraphData } = MetricsHelper;
 
     const pendingOrders = getOrdersByType(orders, 'Pending');
     const processingOrders = getOrdersByType(orders, 'Processing');
     const deliveredOrders = getOrdersByType(orders, 'Delivered');
 
     const data = {
-      years: getYears(orders).sort((a, b) => b - a),
       labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       datasets: [{
         label: 'pending',
@@ -160,6 +175,33 @@ module.exports = class MetricsHelper {
       }, {
         label: 'delivered',
         data: getSalesGraphData(deliveredOrders, year),
+        backgroundColor: 'rgb(248, 148, 6)'
+      }]
+    };
+
+    return data;
+  }
+
+  static getOrders(orders = [], year) {
+    const { getOrdersByType, getOrdersGraphData } = MetricsHelper;
+
+    const pendingOrders = getOrdersByType(orders, 'Pending');
+    const processingOrders = getOrdersByType(orders, 'Processing');
+    const deliveredOrders = getOrdersByType(orders, 'Delivered');
+
+    const data = {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+      datasets: [{
+        label: 'pending',
+        data: getOrdersGraphData(pendingOrders, year),
+        backgroundColor: 'rgb(238, 95, 91)'
+      }, {
+        label: 'processing',
+        data: getOrdersGraphData(processingOrders, year),
+        backgroundColor: 'rgb(91, 192, 222)'
+      }, {
+        label: 'delivered',
+        data: getOrdersGraphData(deliveredOrders, year),
         backgroundColor: 'rgb(248, 148, 6)'
       }]
     };
