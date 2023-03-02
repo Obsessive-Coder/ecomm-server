@@ -1,6 +1,6 @@
 {
   "name": "ecomm-server",
-  "version": "0.16.14",
+  "version": "0.17.15",
   "description": "Server and API for e-commerce site.",
   "main": "index.js",
   "scripts": {
